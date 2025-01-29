@@ -1,0 +1,10 @@
+The file enigma.c is an implementation of an Engima Machine in C. The program will encrypt any message passed to it using the I, II and III rotors, the B reflector and a randomly chosen plugbaord configuration. The encryption implemented by each component is shown at the top of the file.
+
+Input:
+./enigma "INPUT"
+
+Important Information:
+> The INPUT must be in all lower case and can contain spaces.
+> The machine can also decrypt any messages that have been encrypted with the same settings.
+> The rotors I, II, III and refector B are the actual rotors and reflectors that would have been used during the Second World War. The program can be reconfigured to use different rotor configurations.
+> The plugboard settings that are set by default have been chosen at random and can be changed by editing the input and output strings within the plugboard function. 
