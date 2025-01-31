@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <ctype.h>
 
 #define EXIT_CODE 1
 
@@ -57,7 +58,7 @@ void rotate(char rotor[]) {
 }
 
 //Controls the functionality of the plugboard. 10 pairs of letters are connected for encryption.
-//The remaining 6 letter are connected to themselves
+//The remaining 6 letters are connected to themselves
 char plugboard(char pb) {
     char input[] = "aobgqfstjxzehpilmncvdkruwy";
     char output[] = "oagbfqtsxjezphlinmvcdkruwy";
@@ -69,7 +70,7 @@ char plugboard(char pb) {
 }
 
 //Passes the input to each component to mimic the physical connections of the engima machine
-void components(char input[], char rotor1[], char rotor2[], char rotor3[], char encrypt[], int i) {
+void components(char input[], char rotor1[], char rotor2[], char rotor3[], char encrypt[], int count1, int count2, int i) {
     char pb = plugboard(input[i]);
     char r1 = rotor(pb, rotor1, rotor1);
     char r2 = rotor(r1, rotor1, rotor2);
@@ -80,19 +81,21 @@ void components(char input[], char rotor1[], char rotor2[], char rotor3[], char 
     char r6 = rotor(r5, rotor2, rotor1);
     pb = plugboard(r6);
     rotate(rotor1);
-    if (i % 26 == 0) rotate(rotor2);
-    if (i % 676 == 0) rotate(rotor3);
+    if (count1 % 26 == 0) rotate(rotor2);
+    if (count2 % 26 == 0) rotate(rotor3);
     encrypt[i] = pb;
 }
 
 //Passes the individual characters of the input to the components function one by one
-void controller(char input[], char rotor1[], char rotor2[], char rotor3[]) {
+void controller(char input[], char rotor1[], char rotor2[], char rotor3[], int count1, int count2) {
     int length = strlen(input);
     char encrypt[length + 1];
     for (int i = 0; i < length; i++) {
         if (input[i] == ' ') encrypt[i] = ' ';
         else {
-            components(input, rotor1, rotor2, rotor3, encrypt, i);
+            components(input, rotor1, rotor2, rotor3, encrypt, count1, count2, i);
+            count1++;
+            if (count1 % 26 == 0) count2++;
         }
     }
     encrypt[length] = '\0';
@@ -112,7 +115,8 @@ void startingPos(char rotor1[], char rotor2[], char rotor3[], int pos1, int pos2
     }
 }
 
-void rotorCreate(char input[], int pos1, int pos2, int pos3) {
+//Instanciates the rotors and positions them according to the starting positions given
+void rotorCreate(char input[], int pos1, int pos2, int pos3, int count1, int count2) {
     char rotor1[27];
     char rotor2[27];
     char rotor3[27];
@@ -120,16 +124,29 @@ void rotorCreate(char input[], int pos1, int pos2, int pos3) {
     strcpy(rotor2, "ajdksiruxblhwtmcqgznpyfvoe");
     strcpy(rotor3, "bdfhjlcprtxvznyeiwgakmusqo");
     startingPos(rotor1, rotor2, rotor3, pos1, pos2, pos3);
-    controller(input, rotor1, rotor2, rotor3);
+    controller(input, rotor1, rotor2, rotor3, count1, count2);
 }
 
-//Instanciation of the 3 rotors. All rotors have a starting position of 0.
+void lower(char input[]) {
+    int length = strlen(input);
+    for (int i = 0; i < length; i++) {
+        input[i] = tolower(input[i]);
+    }
+}
+
+//All rotors have a starting position of 0.
 int main(int n, char *args[n]) {
     if (n == 2) {
+        //Edit these variables to change the starting positions of the rotors
+        //pos1, pos2 and pos3 change the starting position of the rotors
+        //count1 and count2 change the position of the notches in rotors I & II
         int pos1 = 0;
         int pos2 = 0;
         int pos3 = 0;
-        rotorCreate(args[1], pos1, pos2, pos3);
+        int count1 = 1;
+        int count2 = 1;
+        lower(args[1]);
+        rotorCreate(args[1], pos1, pos2, pos3, count1, count2);
         return 0;
     }
     else error();
