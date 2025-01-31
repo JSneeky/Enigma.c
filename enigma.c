@@ -4,6 +4,9 @@
 #include <ctype.h>
 
 #define EXIT_CODE 1
+#define ALPHA 26
+#define LAST 25
+#define ROTORLEN 27
 
 void error() {
     fprintf(stderr, "Input error.");
@@ -26,7 +29,7 @@ void error() {
 char reflector(char ref) {
     char alphabet[] = "abcdefghijklmnopqrstuvwxyz";
     char output[] = "yruhqsldpxngokmiebfzcwvjat";
-    for (int i = 0; i < 26; i++) {
+    for (int i = 0; i < ALPHA; i++) {
         if (alphabet[i] == ref) return output[i];
         else; 
     } 
@@ -36,7 +39,7 @@ char reflector(char ref) {
 //Controls the functionality of the rotors. Scans rotor1 for the position of the 
 //input, r, and then outputs the character in that position in rotor 2.
 char rotor(char r, char rotor1[], char rotor2[]) {
-    for (int i = 0; i < 26; i++) {
+    for (int i = 0; i < ALPHA; i++) {
         if (rotor1[i] == r) return rotor2[i];
         else; 
     } 
@@ -48,10 +51,10 @@ char rotor(char r, char rotor1[], char rotor2[]) {
 //and every 676 key presses for rotor III. Assuming that the notches are at the starting position.
 //This mimics the mechanical rotation of the rotors within the machine. 
 void rotate(char rotor[]) {
-    char store = rotor[25];
-    char rotorStore[27];
+    char store = rotor[LAST];
+    char rotorStore[ROTORLEN];
     strcpy(rotorStore, rotor);
-    for (int i = 0; i < 25; i++) {
+    for (int i = 0; i < LAST; i++) {
         rotor[i + 1] = rotorStore[i];
     }
     rotor[0] = store;
@@ -62,7 +65,7 @@ void rotate(char rotor[]) {
 char plugboard(char pb) {
     char input[] = "aobgqfstjxzehpilmncvdkruwy";
     char output[] = "oagbfqtsxjezphlinmvcdkruwy";
-    for (int i = 0; i < 26; i++) {
+    for (int i = 0; i < ALPHA; i++) {
         if (input[i] == pb) return output[i];
         else;
     }
@@ -81,8 +84,8 @@ void components(char input[], char rotor1[], char rotor2[], char rotor3[], char 
     char r6 = rotor(r5, rotor2, rotor1);
     pb = plugboard(r6);
     rotate(rotor1);
-    if (count1 % 26 == 0) rotate(rotor2);
-    if (count2 % 26 == 0) rotate(rotor3);
+    if (count1 % ALPHA == 0) rotate(rotor2);
+    if (count2 % ALPHA == 0) rotate(rotor3);
     encrypt[i] = pb;
 }
 
@@ -95,7 +98,7 @@ void controller(char input[], char rotor1[], char rotor2[], char rotor3[], int c
         else {
             components(input, rotor1, rotor2, rotor3, encrypt, count1, count2, i);
             count1++;
-            if (count1 % 26 == 0) count2++;
+            if (count1 % ALPHA == 0) count2++;
         }
     }
     encrypt[length] = '\0';
@@ -117,9 +120,9 @@ void startingPos(char rotor1[], char rotor2[], char rotor3[], int pos1, int pos2
 
 //Instanciates the rotors and positions them according to the starting positions given
 void rotorCreate(char input[], int pos1, int pos2, int pos3, int count1, int count2) {
-    char rotor1[27];
-    char rotor2[27];
-    char rotor3[27];
+    char rotor1[ROTORLEN];
+    char rotor2[ROTORLEN];
+    char rotor3[ROTORLEN];
     strcpy(rotor1, "ekmflgdqvzntowyhxuspaibrcj");
     strcpy(rotor2, "ajdksiruxblhwtmcqgznpyfvoe");
     strcpy(rotor3, "bdfhjlcprtxvznyeiwgakmusqo");
